@@ -30,25 +30,30 @@ const typeDefs = `#graphql
 `;
 
 const resolvers = {
-    Query: {
-        getAllStores: async (_, args, ___) => {
-            
-        }
+  Query: {
+    getAllStores: async (_, args, ___) => {},
+  },
+  Mutation: {
+    createStore: async (_, args, contextValue) => {
+      const { _id } = contextValue.auth();
+      const { name, description, phoneNumber, address, since } = args;
+
+      const newStore = {
+        name,
+        description,
+        phoneNumber,
+        address,
+        userId: _id,
+        since,
+      };
+
+      const result = await Store.createStore(newStore);
+      return newStore;
     },
-    Mutation: {
-        createStore: async (_, args, ___) => {
-            const { name, description, phoneNumber, address } = args;
-
-            const newStore = { name, description, phoneNumber, address }
-
-            const result = await Store.createStore(newStore);
-
-            return newStore;
-        }
-    }
-}
+  },
+};
 
 module.exports = {
-    typeDefs,
-    resolvers,
-}
+  typeDefs,
+  resolvers,
+};
