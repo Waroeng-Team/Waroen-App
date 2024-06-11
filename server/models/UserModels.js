@@ -1,5 +1,7 @@
 const { database } = require("../config/mongodb");
 const { hashPassword } = require("../helpers/bcrypt");
+const bcrypt = require("bcryptjs");
+const { signToken } = require("../helpers/jwt");
 
 class User {
   static async register(newUser) {
@@ -33,6 +35,35 @@ class User {
     }
     newUser.password = hashPassword(newUser.password);
     return await database.collection("users").insertOne(newUser);
+  }
+
+  static async login(user) {
+    if (!user.email) {
+      throw new Error("Email is required");
+    }
+
+    if (!user.password) {
+      throw new Error("Password is required");
+    }
+
+    const findUser = await database
+      .collection("users")
+      .findOne({ email: user.email });
+    if (!findUser) {
+      throw new Error("Invalid email/password");
+    }
+
+    const isValidPassword = bcrypt.compareSync(
+      user.password,
+      findUser.password
+    );
+    if (!isValidPassword) {
+      throw new Error("Invalid email/password");
+    }
+    
+    const access_token = signToken({ _id: findUser._id });
+
+    return { access_token };
   }
 }
 
