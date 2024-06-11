@@ -7,9 +7,14 @@ const {
   resolvers: userResolvers,
 } = require("./schema/user");
 
+const {
+  typeDefs: storeTypeDefs,
+  resolvers: storeResolvers,
+} = require("./schema/store");
+
 const server = new ApolloServer({
-  typeDefs: [userTypeDefs],
-  resolvers: [userResolvers],
+  typeDefs: [userTypeDefs, storeTypeDefs], 
+  resolvers: [userResolvers, storeResolvers],
   introspection: true,
 });
 
