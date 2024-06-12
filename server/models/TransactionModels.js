@@ -16,17 +16,31 @@ class Transaction {
       let item = await database
         .collection("items")
         .findOne({ _id: new ObjectId(e.itemId) });
+      if (newTransaction.type == "income") {
+        total += item.sellPrice * e.quantity;
 
-      total += item.sellPrice * e.quantity;
+        let newStock = item.stock - e.quantity;
 
-      let newStock = item.stock - e.quantity;
+        await database.collection("items").updateOne(
+          { _id: new ObjectId(e.itemId) },
+          {
+            $set: { stock: newStock },
+          }
+        );
+      }
 
-      let updateStock = await database.collection("items").updateOne(
-        { _id: new ObjectId(e.itemId) },
-        {
-          $set: { stock: newStock },
-        }
-      );
+      if (newTransaction.type == "outcome") {
+        total += item.buyPrice * e.quantity;
+
+        let newStock = item.stock + e.quantity;
+
+        await database.collection("items").updateOne(
+          { _id: new ObjectId(e.itemId) },
+          {
+            $set: { stock: newStock },
+          }
+        );
+      }
     }
     let items = newTransaction.items.map((e) => {
       e.itemId = new ObjectId(e.itemId);
