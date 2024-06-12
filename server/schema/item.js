@@ -102,6 +102,40 @@ const resolvers = {
         return newItem;
       }
     },
+
+    updateItem: async (
+      parent,
+      {
+        id,
+        name,
+        imageUrl,
+        description,
+        category,
+        stock,
+        buyPrice,
+        sellPrice,
+        storeId,
+        barcode,
+      }
+    ) => {
+      const updatedItem = {
+        _id: new ObjectId(id),
+        name,
+        imageUrl,
+        description,
+        category,
+        stock,
+        buyPrice,
+        sellPrice,
+        storeId: new ObjectId(storeId),
+        barcode,
+      };
+
+      const item = await Item.updateItem(updatedItem);
+      // console.log("🚀 ~ item:", item);
+
+      return item;
+    },
   },
 };
 
