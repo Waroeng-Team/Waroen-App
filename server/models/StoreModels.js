@@ -6,8 +6,23 @@ class Store {
         return database.collection("stores");
     }
 
-    static async getAllStores() {
-        return
+    static async getAllStores(_id) {
+        const stores = await Store.collection()
+        .aggregate([
+            {
+                '$match': {
+                  'userId': new ObjectId(_id)
+                }
+              }
+        ]).toArray();
+
+        return stores;
+    }
+
+    static async getStoreById(_id) {
+        const store = await Store.collection().findOne({ _id: new ObjectId(_id) });
+
+        return store;
     }
 
     static async createStore(newStore) {
@@ -16,6 +31,27 @@ class Store {
         const store = await Store.collection().insertOne(newStore);
 
         return store
+    }
+
+    static async updateStore(_id, name, description, phoneNumber, address, since) {
+        since = new Date(since);
+        const store = await Store.collection().findOneAndUpdate(
+            { _id: new ObjectId(_id) },
+            {
+                $set: {
+                    name,
+                    description,
+                    phoneNumber,
+                    address,
+                    since
+                }
+            },
+            { returnOriginal: false }
+        );
+
+        const updatedStore = Store.collection().findOne({ _id: new ObjectId(_id) });
+
+        return updatedStore;
     }
 }
 
