@@ -14,6 +14,10 @@ const typeDefs = `#graphql
     userId: ID
   }
 
+  type Message {
+    message: String
+  }
+
   # The "Query" type is special: it lists all of the available queries that
   # clients can execute, along with the return type for each. In this
   # case, the "books" query returns an array of zero or more Books (defined above).
@@ -25,6 +29,7 @@ const typeDefs = `#graphql
   type Mutation {
     createStore(name: String, description: String, phoneNumber: String, address: String, since: String): Store
     updateStore(_id: ID, name: String, description: String, phoneNumber: String, address: String, since: String): Store
+    deleteStore(_id: ID): Message
   }
 `;
 
@@ -69,6 +74,16 @@ const resolvers = {
       const store = await Store.updateStore(_id, name, description, phoneNumber, address, since);
 
       return store
+    },
+
+    deleteStore: async (_, args, contextValue) => {
+      contextValue.auth()._id;
+      const { _id } = args;
+      const store = await Store.deleteStore(_id);
+
+      const message = { message: "Store has successfully deleted" };
+      
+      return message
     }
   },
 };
