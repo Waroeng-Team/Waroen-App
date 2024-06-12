@@ -51,9 +51,18 @@ class Transaction {
       type: newTransaction.type,
       items,
       total,
+      storeId: new ObjectId(newTransaction.storeId),
       createdAt: new Date(),
     });
     return total;
+  }
+
+  static async getAllTransaction(storeId) {
+    let result = await database
+      .collection("transactions")
+      .find({ storeId: new ObjectId(storeId) })
+      .toArray();
+    return result;
   }
 }
 
