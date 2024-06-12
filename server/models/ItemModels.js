@@ -22,6 +22,22 @@ class Item {
     // console.log("🚀 ~ Item ~ createItem ~ item:", item);
     return await this.itemCollection().insertOne(item);
   }
+
+  static async updateItem(item) {
+    // console.log("🚀 ~ Item ~ updateItem ~ item:", item);
+    // console.log("🚀 ~ Item ~ updateItem ~ item:", item);
+    const res = await this.itemCollection().updateOne(
+      { _id: item._id },
+      { $set: item }
+    );
+    // console.log("🚀 ~ Item ~ updateItem ~ res:", res);
+    console.log("🚀 ~ Item ~ updateItem ~ item._id:", item._id);
+
+    console.log("🚀 ~ Item ~ updateItem ~ item.storeId:", item.storeId);
+    if (res.acknowledged === true) {
+      return await this.getItemById(item.storeId, item._id);
+    }
+  }
 }
 
 module.exports = Item;
