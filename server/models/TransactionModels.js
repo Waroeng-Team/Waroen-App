@@ -64,6 +64,16 @@ class Transaction {
       .toArray();
     return result;
   }
+
+  static async getTransactionById(storeId, transactionId) {
+    let result = await database
+      .collection("transactions")
+      .findOne({
+        _id: new ObjectId(transactionId),
+        storeId: new ObjectId(storeId),
+      })
+    return result;
+  }
 }
 
 module.exports = Transaction;

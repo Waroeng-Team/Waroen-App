@@ -46,6 +46,7 @@ input ItemInput {
 
 type Query {
     getAllTransaction(storeId: ID): [Transaction]
+    getTransactionById(storeId: ID, transactionId: ID): Transaction
 }
 
 type Mutation {
@@ -59,6 +60,12 @@ const resolvers = {
       contextValue.auth();
       const { storeId } = args;
       let result = await Transaction.getAllTransaction(storeId);
+      return result;
+    },
+    getTransactionById: async (parent, args, contextValue) => {
+      contextValue.auth();
+      const { storeId, transactionId } = args;
+      let result = await Transaction.getTransactionById(storeId, transactionId);
       return result;
     },
   },
