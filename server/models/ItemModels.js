@@ -4,8 +4,17 @@ class Item {
   static itemCollection() {
     return database.collection("items");
   }
-  static async getAllItems() {
-    const res = await this.itemCollection().find().toArray();
+  static async getAllItems(storeId) {
+    const res = await this.itemCollection().find({ storeId }).toArray();
+    // const res = await this.itemCollection().find().toArray();
+    return res;
+  }
+
+  static async getItemById(storeId, productId) {
+    const res = await this.itemCollection().findOne({
+      _id: productId,
+      storeId,
+    });
     return res;
   }
 
