@@ -1,5 +1,6 @@
 const { ObjectId } = require("mongodb");
 const { database } = require("../config/mongodb");
+const redis = require("../config/redis");
 
 class Store {
     static collection() {
@@ -28,7 +29,16 @@ class Store {
     static async createStore(newStore) {
         newStore.since = new Date(newStore.since);
         newStore.userId = new ObjectId(newStore.userId)
+
+        if (newStore.name.length === 0) throw new Error("Store name cannot be empty");
+        if (newStore.description.length === 0) throw new Error("Store description cannot be empty");
+        if (newStore.phoneNumber.length === 0) throw new Error("Store phone number cannot be empty");
+        if (newStore.address.length === 0) throw new Error("Store address cannot be empty");
+        if (!newStore.since) throw new Error("Store created since cannot be empty");
+
         const store = await Store.collection().insertOne(newStore);
+
+        await redis.del("stores");
 
         return store
     }

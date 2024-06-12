@@ -77,11 +77,12 @@ const resolvers = {
     },
 
     deleteStore: async (_, args, contextValue) => {
-      contextValue.auth()._id;
+      contextValue.auth();
       const { _id } = args;
-      const store = await Store.deleteStore(_id);
 
-      const message = { message: "Store has successfully deleted" };
+      await Store.deleteStore(_id);
+
+      const message = { message: `Store with id ${_id} has successfully deleted` };
       
       return message
     }
