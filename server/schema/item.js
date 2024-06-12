@@ -45,19 +45,29 @@ const typeDefs = `#graphql
   }
 
   type Mutation {
-    createItem(name: String!, imageUrl: String, description: String, category: String!, stock: Int!, buyPrice: Int!, sellPrice: Int!, createdAt: String!, storeId: ID, barcode: String): Item
-    updateItem(id: ID!, name: String, imageUrl: String, description: String, category: String, stock: Int, buyPrice: Int, sellPrice: Int, storeId: ID, barcode: String): Item
+    createItem(name: String!, imageUrl: String!, description: String!, category: String!, stock: Int!, buyPrice: Int!, sellPrice: Int!, createdAt: String!, storeId: ID!, barcode: String): Item
+    updateItem(id: ID!, name: String!, imageUrl: String!, description: String!, category: String!, stock: Int!, buyPrice: Int!, sellPrice: Int!, storeId: ID!, barcode: String): Item
   }
 `;
 
 const resolvers = {
   Query: {
-    getAllItems: async (parent, { storeId }) => {
-      console.log("🚀 ~ getAllItems: ~ storeId:", storeId);
+    getAllItems: async (parent, { storeId }, contextValue) => {
+      contextValue.auth()._id;
+
+      if (!storeId) {
+        throw new Error("Please provide a storeId");
+      }
+      // console.log("🚀 ~ getAllItems: ~ storeId:", storeId);
       const items = await Item.getAllItems(new ObjectId(storeId));
       return items;
     },
-    getItemById: async (parent, { storeId, productId }) => {
+    getItemById: async (parent, { storeId, productId }, contextValue) => {
+      contextValue.auth()._id;
+
+      if (!storeId || !productId) {
+        throw new Error("Please provide a storeId and productId");
+      }
       const item = await Item.getItemById(
         new ObjectId(storeId),
         new ObjectId(productId)
@@ -80,8 +90,25 @@ const resolvers = {
         createdAt,
         storeId,
         barcode,
-      }
+      },
+      contextValue
     ) => {
+      contextValue.auth()._id;
+
+      if (
+        !name ||
+        !imageUrl ||
+        !description ||
+        !category ||
+        !stock ||
+        !buyPrice ||
+        !sellPrice ||
+        !createdAt ||
+        !storeId
+      ) {
+        throw new Error("Please fill all the fields which are required");
+      }
+
       const newItem = {
         name,
         imageUrl,
@@ -116,8 +143,25 @@ const resolvers = {
         sellPrice,
         storeId,
         barcode,
-      }
+      },
+      contextValue
     ) => {
+      contextValue.auth()._id;
+
+      if (
+        !name ||
+        !imageUrl ||
+        !description ||
+        !category ||
+        !stock ||
+        !buyPrice ||
+        !sellPrice ||
+        !createdAt ||
+        !storeId
+      ) {
+        throw new Error("Please fill all the fields which are required");
+      }
+
       const updatedItem = {
         _id: new ObjectId(id),
         name,
