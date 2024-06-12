@@ -27,12 +27,12 @@ const typeDefs = `#graphql
 type Transaction {
     # _id: String
     type: String
-    items: [Item]
+    items: [ItemTransaction]
     total: Int
     # createdAt: String
 }
 
-type Item {
+type ItemTransaction {
     itemId: String,
     quantity: Int
 }

@@ -15,12 +15,22 @@ const {
 
 const {
   typeDefs: transactionTypeDefs,
-  resolvers: transactionesolvers,
+  resolvers: transactionResolvers,
 } = require("./schema/transaction");
 
+const {
+  typeDefs: itemTypeDefs,
+  resolvers: itemResolvers,
+} = require("./schema/item");
+
 const server = new ApolloServer({
-  typeDefs: [userTypeDefs, storeTypeDefs, transactionTypeDefs],
-  resolvers: [userResolvers, storeResolvers, transactionesolvers],
+  typeDefs: [userTypeDefs, storeTypeDefs, transactionTypeDefs, itemTypeDefs],
+  resolvers: [
+    userResolvers,
+    storeResolvers,
+    transactionResolvers,
+    itemResolvers,
+  ],
   introspection: true,
 });
 
