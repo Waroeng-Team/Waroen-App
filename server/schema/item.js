@@ -40,8 +40,8 @@ const typeDefs = `#graphql
   }
 
   type Query {
-    items: [Item]
-    item(id: ID!): Item
+    getAllItems(storeId: ID!): [Item]
+    getItemById(storeId: ID!, productId: ID!): Item
   }
 
   type Mutation {
@@ -52,12 +52,16 @@ const typeDefs = `#graphql
 
 const resolvers = {
   Query: {
-    items: async () => {
-      const items = await Item.find({});
+    getAllItems: async (parent, { storeId }) => {
+      console.log("🚀 ~ getAllItems: ~ storeId:", storeId);
+      const items = await Item.getAllItems(new ObjectId(storeId));
       return items;
     },
-    item: async (parent, { id }) => {
-      const item = await Item.findById(id);
+    getItemById: async (parent, { storeId, productId }) => {
+      const item = await Item.getItemById(
+        new ObjectId(storeId),
+        new ObjectId(productId)
+      );
       return item;
     },
   },
