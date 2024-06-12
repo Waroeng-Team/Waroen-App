@@ -53,6 +53,10 @@ class Store {
 
         return updatedStore;
     }
+    
+    static async deleteStore(_id) {
+        await Store.collection().findOneAndDelete({ _id: new ObjectId(_id) });
+    }
 }
 
 module.exports = Store;
