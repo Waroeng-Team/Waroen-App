@@ -1,3 +1,4 @@
+const { ObjectId } = require("mongodb");
 const Item = require("../models/ItemModels");
 
 const itemEx = [
@@ -13,15 +14,16 @@ const itemEx = [
     sellPrice: 1500,
     createdAt: "2021-04-28T06:09:02.911Z",
     expiredAt: "2021-04-28T06:09:02.911Z",
+    storeId: "66681bf2338fe8d36fd5663b",
     barcode: "123456789",
   },
 ];
 
-const item = `#graphql
+const typeDefs = `#graphql
   
   type Item {
     _id: ID
-    name: String!
+    name: String
     imageUrl: String
     description: String
     category: String
@@ -29,9 +31,12 @@ const item = `#graphql
     buyPrice: Int
     sellPrice: Int
     createdAt: String
-    expiredAt: String
     storeId: ID
     barcode: String
+  }
+
+  type Message {
+    message: String
   }
 
   type Query {
@@ -40,7 +45,7 @@ const item = `#graphql
   }
 
   type Mutation {
-    createItem(name: String!, imageUrl: String, description: String, category: String, stock: Int!, buyPrice: Int!, sellPrice: Int!, createdAt: String!, storeId: ID, barcode: String): Item
+    createItem(name: String!, imageUrl: String, description: String, category: String!, stock: Int!, buyPrice: Int!, sellPrice: Int!, createdAt: String!, storeId: ID, barcode: String): Item
     updateItem(id: ID!, name: String, imageUrl: String, description: String, category: String, stock: Int, buyPrice: Int, sellPrice: Int, storeId: ID, barcode: String): Item
   }
 `;
@@ -73,7 +78,7 @@ const resolvers = {
         barcode,
       }
     ) => {
-      const newItem = new Item({
+      const newItem = {
         name,
         imageUrl,
         description,
@@ -82,13 +87,18 @@ const resolvers = {
         buyPrice,
         sellPrice,
         createdAt,
-        storeId,
+        storeId: new ObjectId(storeId),
         barcode,
-      });
-      const item = await newItem.save();
-      return item;
+      };
+      // console.log("🚀 ~ newItem:", newItem);
+
+      const item = await Item.createItem(newItem);
+
+      if (item.acknowledged === true) {
+        return newItem;
+      }
     },
   },
 };
 
-module.exports = { item, resolvers };
+module.exports = { typeDefs, resolvers };
