@@ -25,43 +25,50 @@ const transactions = [
 
 const typeDefs = `#graphql
 type Transaction {
-    # _id: String
+    _id: String
     type: String
     items: [ItemTransaction]
     total: Int
-    # createdAt: String
+    storeId: ID
+    createdAt: String
 }
 
 type ItemTransaction {
-    itemId: String,
+    itemId: ID,
     quantity: Int
 }
 
 input ItemInput {
-    itemId: String
+    itemId: ID
     quantity: Int
 }
 
 
 type Query {
-    transactions: [Transaction]
+    getAllTransaction(storeId: ID): [Transaction]
 }
 
 type Mutation {
-    addtransaction(type: String, items: [ItemInput]): Transaction
+    addtransaction(type: String, items: [ItemInput], storeId: ID): Transaction
 }
 `;
 
 const resolvers = {
   Query: {
-    transactions: () => transactions,
+    getAllTransaction: async (parent, args, contextValue) => {
+      contextValue.auth();
+      const { storeId } = args;
+      let result = await Transaction.getAllTransaction(storeId);
+      return result;
+    },
   },
   Mutation: {
-    addtransaction: async (parent, args) => {
-      const { type, items } = args;
-      const newTransaction = { type, items };
+    addtransaction: async (parent, args, contextValue) => {
+      contextValue.auth();
+      const { type, items, storeId } = args;
+      const newTransaction = { type, items, storeId };
       let total = await Transaction.addTransaction(newTransaction);
-      return { type, items, total };
+      return { type, items, total, storeId };
     },
   },
 };
