@@ -24,14 +24,27 @@ const typeDefs = `#graphql
 
   type Mutation {
     createStore(name: String, description: String, phoneNumber: String, address: String, since: String): Store
-    deleteStore(_id: ID): Store
-    updateStore(_id: ID): Store
+    updateStore(_id: ID, name: String, description: String, phoneNumber: String, address: String, since: String): Store
   }
 `;
 
 const resolvers = {
   Query: {
-    getAllStores: async (_, args, ___) => {},
+    getAllStores: async (_, args, contextValue) => {
+      const { _id } = contextValue.auth();
+      const stores = await Store.getAllStores(_id);
+
+      return stores;
+    },
+    getStoreById: async (_, args, contextValue) => {
+      contextValue.auth();
+      const { _id } = args;
+      console.log(); 
+
+      const store = await Store.getStoreById(_id);
+
+      return store;
+    }
   },
   Mutation: {
     createStore: async (_, args, contextValue) => {
@@ -50,6 +63,13 @@ const resolvers = {
       const result = await Store.createStore(newStore);
       return newStore;
     },
+    updateStore: async (_, args, contextValue) => {
+      contextValue.auth()._id;
+      const { _id, name, description, phoneNumber, address, since } = args;
+      const store = await Store.updateStore(_id, name, description, phoneNumber, address, since);
+
+      return store
+    }
   },
 };
 
