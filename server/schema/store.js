@@ -1,3 +1,4 @@
+const redis = require("../config/redis");
 const Store = require("../models/StoreModels");
 
 const typeDefs = `#graphql
@@ -36,20 +37,31 @@ const typeDefs = `#graphql
 const resolvers = {
   Query: {
     getAllStores: async (_, args, contextValue) => {
-      const { _id } = contextValue.auth();
-      const stores = await Store.getAllStores(_id);
+      try {
+        const { _id } = contextValue.auth();
 
-      return stores;
+        const cache = await redis.get("stores");
+        if (cache) {
+          return JSON.parse(cache);
+        }
+
+        const stores = await Store.getAllStores(_id);
+        await redis.set("stores", JSON.stringify(stores));
+
+        return stores;
+      } catch (error) {
+        console.log(error);
+      }
     },
     getStoreById: async (_, args, contextValue) => {
       contextValue.auth();
       const { _id } = args;
-      console.log(); 
+      console.log();
 
       const store = await Store.getStoreById(_id);
 
       return store;
-    }
+    },
   },
   Mutation: {
     createStore: async (_, args, contextValue) => {
@@ -71,20 +83,30 @@ const resolvers = {
     updateStore: async (_, args, contextValue) => {
       contextValue.auth()._id;
       const { _id, name, description, phoneNumber, address, since } = args;
-      const store = await Store.updateStore(_id, name, description, phoneNumber, address, since);
+      const store = await Store.updateStore(
+        _id,
+        name,
+        description,
+        phoneNumber,
+        address,
+        since
+      );
 
-      return store
+      return store;
     },
 
     deleteStore: async (_, args, contextValue) => {
-      contextValue.auth()._id;
+      contextValue.auth();
       const { _id } = args;
-      const store = await Store.deleteStore(_id);
 
-      const message = { message: "Store has successfully deleted" };
-      
-      return message
-    }
+      await Store.deleteStore(_id);
+
+      const message = {
+        message: `Store with id ${_id} has successfully deleted`,
+      };
+
+      return message;
+    },
   },
 };
 
