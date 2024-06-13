@@ -4,13 +4,14 @@ const Report = require("../models/ReportModels");
 const typeDefs = `#graphql
 
   type Report {
-    id: ID
+    _id: ID
     createdAt: String
-    transactions: [Transaction]
-    income: Int
-    outcome: Int
+    # transactions: [ID]
+    totalIncome: Int
+    totalOutcome: Int
     profit: Int
     storeId: ID
+    transactionDetail: [Transaction]
   }
 
   type Transaction {
