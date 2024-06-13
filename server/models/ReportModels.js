@@ -1,4 +1,28 @@
-const { database } = require("../config/mongodb");
+const { database, ObjectId } = require("../config/mongodb");
+
+const aggregation = [
+  {
+    $lookup: {
+      from: "transactions",
+      let: {
+        transactionIds: "$transactions",
+      },
+      pipeline: [
+        {
+          $match: {
+            $expr: {
+              $in: ["$_id", "$$transactionIds"],
+            },
+          },
+        },
+      ],
+      as: "transactionDetail",
+    },
+  },
+  {
+    $unset: "transactions",
+  },
+];
 
 class Report {
   static reportCollection() {
@@ -23,52 +47,111 @@ class Report {
       })
       .toArray();
 
-    const { profit, income, outcome, transactionIds } = transactions.reduce(
-      (acc, { _id, total, type }) => {
-        if (type === "income") {
-          acc.profit += total;
-          acc.income += total;
-        } else if (type === "outcome") {
-          acc.profit -= total;
-          acc.outcome += total;
-        }
-        acc.transactionIds.push(_id);
-        return acc;
-      },
-      { profit: 0, income: 0, outcome: 0, transactionIds: [] }
-    );
+    const { profit, totalIncome, totalOutcome, transactionIds } =
+      transactions.reduce(
+        (acc, { _id, total, type }) => {
+          if (type === "income") {
+            acc.profit += total;
+            acc.totalIncome += total;
+          } else if (type === "outcome") {
+            acc.profit -= total;
+            acc.totalOutcome += total;
+          }
+          acc.transactionIds.push(_id);
+          return acc;
+        },
+        { profit: 0, totalIncome: 0, totalOutcome: 0, transactionIds: [] }
+      );
 
-    const result = await this.reportCollection().findOne({
+    // const report = await this.reportCollection()
+    //   .aggregate([
+    //     {
+    //       $match: {
+    //         storeId,
+    //         createdAt: start,
+    //       },
+    //     },
+    //     ...aggregation,
+    //   ])
+    //   .toArray();
+
+    // if (report.length === 0) {
+    //   const newReport = {
+    //     storeId,
+    //     createdAt: start,
+    //     profit,
+    //     transactions: transactionIds,
+    //     totalIncome,
+    //     totalOutcome,
+    //   };
+    //   await this.reportCollection().insertOne(newReport);
+    //   return newReport;
+    // }
+
+    const newReport = {
       storeId,
       createdAt: start,
-    });
+      profit,
+      transactions: transactionIds,
+      totalIncome,
+      totalOutcome,
+    };
 
-    if (!result) {
-      const newReport = {
-        storeId,
-        createdAt: start,
-        profit,
-        transactions: transactionIds,
-        income,
-        outcome,
-      };
-      await this.reportCollection().insertOne(newReport);
-      return newReport;
-    }
+    await this.reportCollection().updateOne(
+      { storeId, createdAt: start },
+      { $setOnInsert: newReport },
+      { upsert: true }
+    );
 
-    return result;
+    // Retrieve the report with transaction details
+    const report = await this.reportCollection()
+      .aggregate([
+        {
+          $match: {
+            storeId,
+            createdAt: start,
+          },
+        },
+        ...aggregation,
+      ])
+      .toArray();
+
+    return report[0];
   }
 
   static async getReportByMonth(storeId, date) {
+    const start = new Date(date);
+    start.setDate(1);
+    start.setHours(0, 0, 0, 0);
+
+    const end = new Date(date);
+    end.setMonth(end.getMonth() + 1);
+    end.setDate(0);
+    end.setHours(23, 59, 59, 999);
+
     const result = await this.reportCollection()
-      .find({ storeId, createdAt: month })
+      .find({
+        storeId,
+        createdAt: { $gte: start, $lte: end },
+      })
       .toArray();
     return result;
   }
 
   static async getReportByYear(storeId, date) {
+    const start = new Date(date);
+    start.setMonth(0, 1);
+    start.setHours(0, 0, 0, 0);
+
+    const end = new Date(date);
+    end.setMonth(11, 31);
+    end.setHours(23, 59, 59, 999);
+
     const result = await this.reportCollection()
-      .find({ storeId, createdAt: year })
+      .find({
+        storeId,
+        createdAt: { $gte: start, $lte: end },
+      })
       .toArray();
     return result;
   }
