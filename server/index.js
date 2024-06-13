@@ -23,13 +23,25 @@ const {
   resolvers: itemResolvers,
 } = require("./schema/item");
 
+const {
+  typeDefs: reportTypeDefs,
+  resolvers: reportResolvers,
+} = require("./schema/report");
+
 const server = new ApolloServer({
-  typeDefs: [userTypeDefs, storeTypeDefs, transactionTypeDefs, itemTypeDefs],
+  typeDefs: [
+    userTypeDefs,
+    storeTypeDefs,
+    transactionTypeDefs,
+    itemTypeDefs,
+    reportTypeDefs,
+  ],
   resolvers: [
     userResolvers,
     storeResolvers,
     transactionResolvers,
     itemResolvers,
+    reportResolvers,
   ],
   introspection: true,
 });
