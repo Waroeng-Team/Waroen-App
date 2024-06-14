@@ -38,10 +38,11 @@ class User {
   }
 
   static async login(user) {
+    // let dataUser = require("../db/user.json");
+    // await database.collection("test").insertMany(dataUser);
     if (!user.email) {
       throw new Error("Email is required");
     }
-
     if (!user.password) {
       throw new Error("Password is required");
     }
@@ -60,7 +61,7 @@ class User {
     if (!isValidPassword) {
       throw new Error("Invalid email/password");
     }
-    
+
     const access_token = signToken({ _id: findUser._id });
 
     return { access_token };

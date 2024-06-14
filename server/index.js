@@ -31,44 +31,55 @@ const {
   resolvers: reportResolvers,
 } = require("./schema/report");
 
-const server = new ApolloServer({
-  typeDefs: [
-    userTypeDefs,
-    storeTypeDefs,
-    transactionTypeDefs,
-    itemTypeDefs,
-    reportTypeDefs,
-  ],
-  resolvers: [
-    userResolvers,
-    storeResolvers,
-    transactionResolvers,
-    itemResolvers,
-    reportResolvers,
-  ],
-  introspection: true,
-});
+async function createApolloServer({ port } = { port: 3000 }) {
+  const server = new ApolloServer({
+    typeDefs: [
+      userTypeDefs,
+      storeTypeDefs,
+      transactionTypeDefs,
+      itemTypeDefs,
+      reportTypeDefs,
+    ],
+    resolvers: [
+      userResolvers,
+      storeResolvers,
+      transactionResolvers,
+      itemResolvers,
+      reportResolvers,
+    ],
+    introspection: true,
+  });
 
-startStandaloneServer(server, {
-  listen: { port: process.env.PORT || 3000 },
-  context: async ({ req, res }) => {
-    return {
-      auth: () => {
-        const authen = req.headers.authorization;
-        if (!authen) {
-          throw new Error("Unauthorized");
-        }
+  const { url } = await startStandaloneServer(server, {
+    listen: { port: port },
+    context: async ({ req, res }) => {
+      return {
+        auth: () => {
+          const authen = req.headers.authorization;
+          if (!authen) {
+            throw new Error("Unauthorized");
+          }
 
-        const [type, token] = authen.split(" ");
-        if (type !== "Bearer") {
-          throw new Error("Unauthorized");
-        }
+          const [type, token] = authen.split(" ");
+          if (type !== "Bearer") {
+            throw new Error("Unauthorized");
+          }
 
-        const decoded = verifyToken(token);
-        return decoded;
-      },
-    };
-  },
-}).then(({ url }) => {
+          const decoded = verifyToken(token);
+          return decoded;
+        },
+      };
+    },
+  });
   console.log(`🚀  Server ready at: ${url}`);
-});
+  return {
+    server,
+    url,
+  };
+}
+
+if (process.env.NODE_ENV !== "test") {
+  createApolloServer();
+}
+
+module.exports = { createApolloServer };
