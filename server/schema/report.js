@@ -30,6 +30,7 @@ const typeDefs = `#graphql
 
   type Query {
     getReportByDay(storeId: ID, date: String): Report
+    getReportByWeek(storeId: ID, date: String): Report
     getReportByMonth(storeId: ID, date: String): Report
     getReportByYear(storeId: ID, date: String): Report
   }
@@ -40,6 +41,11 @@ const resolvers = {
     getReportByDay: async (_, { storeId, date }, contextValue) => {
       contextValue.auth();
       let result = await Report.getReportByDay(new ObjectId(storeId), date);
+      return result;
+    },
+    getReportByWeek: async (_, { storeId, date }, contextValue) => {
+      contextValue.auth();
+      let result = await Report.getReportByWeek(new ObjectId(storeId), date);
       return result;
     },
     getReportByMonth: async (_, { storeId, date }, contextValue) => {
