@@ -84,6 +84,39 @@ describe("Store Query", () => {
     });
   });
 
+  test("Get all stores", async () => {
+    const queryData = {
+      query: `query GetAllStores {
+                getAllStores {
+                    _id
+                    name
+                    description
+                    phoneNumber
+                    address
+                    since
+                    userId
+                }
+            }`,
+      variables: {},
+    };
+    const response = await request(url)
+      .post("/")
+      .set("Authorization", `Bearer ${userToken}`)
+      .send(queryData);
+
+    expect(response.status).toBe(200);
+    expect(response.body.data.getAllStores).toBeInstanceOf(Array);
+    response.body.data.getAllStores.forEach((store) => {
+      expect(store).toHaveProperty("_id", expect.any(String));
+      expect(store).toHaveProperty("name", expect.any(String));
+      expect(store).toHaveProperty("description", expect.any(String));
+      expect(store).toHaveProperty("phoneNumber", expect.any(String));
+      expect(store).toHaveProperty("address", expect.any(String));
+      expect(store).toHaveProperty("since", expect.any(String));
+      expect(store).toHaveProperty("userId", expect.any(String));
+    });
+  });
+
   test("Get store by id", async () => {
     const queryData = {
       query: `query GetStoreById($id: ID) {
