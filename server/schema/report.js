@@ -38,16 +38,19 @@ const typeDefs = `#graphql
 const resolvers = {
   Query: {
     getReportByDay: async (_, { storeId, date }, contextValue) => {
-      // Implement your logic here
       contextValue.auth();
       let result = await Report.getReportByDay(new ObjectId(storeId), date);
       return result;
     },
-    getReportByMonth: async (_, { storeId, date }) => {
-      // Implement your logic here
+    getReportByMonth: async (_, { storeId, date }, contextValue) => {
+      contextValue.auth();
+      let result = await Report.getReportByMonth(new ObjectId(storeId), date);
+      return result;
     },
-    getReportByYear: async (_, { storeId, date }) => {
-      // Implement your logic here
+    getReportByYear: async (_, { storeId, date }, contextValue) => {
+      contextValue.auth();
+      let result = await Report.getReportByYear(new ObjectId(storeId), date);
+      return result;
     },
   },
 };
