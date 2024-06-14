@@ -2,8 +2,14 @@ const { database } = require("../config/mongodb");
 const { hashPassword } = require("../helpers/bcrypt");
 const bcrypt = require("bcryptjs");
 const { signToken } = require("../helpers/jwt");
+const { ObjectId } = require("mongodb");
 
 class User {
+  static async findUserById(_id) {
+    const user = await database.collection("users").findOne({ _id: new ObjectId(_id) });
+    return user;
+  }
+
   static async register(newUser) {
     if (!newUser.name) {
       throw new Error("Name is required");

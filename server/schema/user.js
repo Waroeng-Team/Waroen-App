@@ -30,6 +30,7 @@ type AccessToken {
 
 type Query {
     users: [User]
+    getUserById(_id: ID): User
 }
 
 type Mutation {
@@ -41,6 +42,13 @@ type Mutation {
 const resolvers = {
   Query: {
     users: () => users,
+    getUserById: async (_, args, contextValue) => {
+      contextValue.auth();
+      const { _id } = args;
+      const user = await User.findUserById(_id);
+
+      return user;
+    }
   },
   Mutation: {
     register: async (parent, args) => {
