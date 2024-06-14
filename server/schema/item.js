@@ -156,7 +156,6 @@ const resolvers = {
         !stock ||
         !buyPrice ||
         !sellPrice ||
-        !createdAt ||
         !storeId
       ) {
         throw new Error("Please fill all the fields which are required");
@@ -176,7 +175,7 @@ const resolvers = {
       };
 
       const item = await Item.updateItem(updatedItem);
-      // console.log("🚀 ~ item:", item);
+      console.log("🚀 ~ item:", item);
 
       return item;
     },
