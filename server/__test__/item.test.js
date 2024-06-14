@@ -18,6 +18,7 @@ dataItems.map((item) => {
 
 beforeAll(async () => {
   ({ server, url } = await createApolloServer({ port: 0 }));
+  await database.collection("items").drop();
   await database.collection("items").insertMany(dataItems);
 });
 

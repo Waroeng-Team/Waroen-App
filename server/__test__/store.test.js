@@ -9,10 +9,8 @@ const { ObjectId } = require("mongodb");
 let userToken;
 let userId;
 
-const SECONDS = 1000;
-jest.setTimeout(10 * SECONDS)
-
 beforeAll(async () => {
+  jest.setTimeout(60000);
   ({ server, url } = await createApolloServer({ port: 0 }));
   //Seeding User
   let users = require("../db/user.json");
@@ -21,6 +19,7 @@ beforeAll(async () => {
     user._id = new ObjectId(user._id);
     return user;
   });
+  await database.collection("users").drop();
   await database.collection("users").insertMany(users);
 
   //Find 1 user
@@ -40,7 +39,7 @@ beforeAll(async () => {
     store._id = new ObjectId(store._id);
     return store;
   });
-
+  await database.collection("stores").drop();
   await database.collection("stores").insertMany(stores);
 });
 
@@ -99,22 +98,546 @@ describe("Store Query", () => {
                 }
             }`,
       variables: {
-        "id": "66697c86be63217582250a92"
+        id: "66697c86be63217582250a92",
       },
     };
     const response = await request(url)
-      .post('/')
+      .post("/")
       .set("Authorization", `Bearer ${userToken}`)
       .send(queryData);
 
     expect(response.status).toBe(200);
     expect(response.body.data.getStoreById).toBeInstanceOf(Object);
-    expect(response.body.data.getStoreById).toHaveProperty("_id", expect.any(String));
-    expect(response.body.data.getStoreById).toHaveProperty("name", expect.any(String));
-    expect(response.body.data.getStoreById).toHaveProperty("description", expect.any(String));
-    expect(response.body.data.getStoreById).toHaveProperty("phoneNumber", expect.any(String));
-    expect(response.body.data.getStoreById).toHaveProperty("address", expect.any(String));
-    expect(response.body.data.getStoreById).toHaveProperty("since", expect.any(String));
-    expect(response.body.data.getStoreById).toHaveProperty("userId", expect.any(String));
+    expect(response.body.data.getStoreById).toHaveProperty(
+      "_id",
+      expect.any(String)
+    );
+    expect(response.body.data.getStoreById).toHaveProperty(
+      "name",
+      expect.any(String)
+    );
+    expect(response.body.data.getStoreById).toHaveProperty(
+      "description",
+      expect.any(String)
+    );
+    expect(response.body.data.getStoreById).toHaveProperty(
+      "phoneNumber",
+      expect.any(String)
+    );
+    expect(response.body.data.getStoreById).toHaveProperty(
+      "address",
+      expect.any(String)
+    );
+    expect(response.body.data.getStoreById).toHaveProperty(
+      "since",
+      expect.any(String)
+    );
+    expect(response.body.data.getStoreById).toHaveProperty(
+      "userId",
+      expect.any(String)
+    );
+  });
+
+  describe("Create Store", () => {
+    describe("Success create store", () => {
+      test("Create store", async () => {
+        const queryData = {
+          query: `mutation CreateStore($name: String, $description: String, $phoneNumber: String, $address: String, $since: String) {
+                    createStore(name: $name, description: $description, phoneNumber: $phoneNumber, address: $address, since: $since) {
+                      _id
+                      name
+                      description
+                      phoneNumber
+                      address
+                      since
+                      userId
+                    }
+                  }`,
+          variables: {
+            name: "Denden Mushi Store",
+            description: "Ini toko Denden Mushi Store",
+            phoneNumber: "08123123123",
+            address: "Jl. Pangkal Kaya",
+            since: "2000",
+          },
+        };
+        const response = await request(url)
+          .post("/")
+          .set("Authorization", `Bearer ${userToken}`)
+          .send(queryData);
+
+        expect(response.status).toBe(200);
+        expect(response.body.data.createStore).toBeInstanceOf(Object);
+        expect(response.body.data.createStore).toHaveProperty("_id", expect.any(String));
+        expect(response.body.data.createStore).toHaveProperty("name", expect.any(String));
+        expect(response.body.data.createStore).toHaveProperty("description", expect.any(String));
+        expect(response.body.data.createStore).toHaveProperty("phoneNumber", expect.any(String));
+        expect(response.body.data.createStore).toHaveProperty("address", expect.any(String));
+        expect(response.body.data.createStore).toHaveProperty("since", expect.any(String));
+        expect(response.body.data.createStore).toHaveProperty("userId", expect.any(String));
+      });
+    });
+
+    describe("Failed create store", () => {
+      test("Unauthorized", async () => {
+        const queryData = {
+          query: `mutation CreateStore($name: String, $description: String, $phoneNumber: String, $address: String, $since: String) {
+                    createStore(name: $name, description: $description, phoneNumber: $phoneNumber, address: $address, since: $since) {
+                      _id
+                      name
+                      description
+                      phoneNumber
+                      address
+                      since
+                      userId
+                    }
+                  }`,
+          variables: {
+            name: "Denden Mushi Store",
+            description: "Ini toko Denden Mushi Store",
+            phoneNumber: "08123123123",
+            address: "Jl. Pangkal Kaya",
+            since: "2000",
+          },
+        };
+        const response = await request(url).post("/").send(queryData);
+
+        expect(response.status).toBe(200);
+        expect(response.body.errors).toBeInstanceOf(Array);
+        expect(response.body.errors[0]).toHaveProperty(
+          "message",
+          "Unauthorized"
+        );
+      });
+    });
+
+    test("Failed create store : Store cannot empty", async () => {
+      const queryData = {
+        query: `mutation CreateStore($name: String, $description: String, $phoneNumber: String, $address: String, $since: String) {
+                  createStore(name: $name, description: $description, phoneNumber: $phoneNumber, address: $address, since: $since) {
+                    _id
+                    name
+                    description
+                    phoneNumber
+                    address
+                    since
+                    userId
+                  }
+                }`,
+        variables: {
+          name: "",
+          description: "Ini toko Denden Mushi Store",
+          phoneNumber: "08123123123",
+          address: "Jl. Pangkal Kaya",
+          since: "2000"
+        },
+      };
+      const response = await request(url)
+        .post("/")
+        .set("Authorization", `Bearer ${userToken}`)
+        .send(queryData);
+
+      expect(response.status).toBe(200);
+      expect(response.body.errors).toBeInstanceOf(Array);
+      expect(response.body.errors[0]).toHaveProperty("message", "Store name cannot be empty");
+    });
+
+    test("Failed create store : Description cannot empty", async () => {
+      const queryData = {
+        query: `mutation CreateStore($name: String, $description: String, $phoneNumber: String, $address: String, $since: String) {
+                  createStore(name: $name, description: $description, phoneNumber: $phoneNumber, address: $address, since: $since) {
+                    _id
+                    name
+                    description
+                    phoneNumber
+                    address
+                    since
+                    userId
+                  }
+                }`,
+        variables: {
+          name: "Denden Mushi Store",
+          description: "",
+          phoneNumber: "08123123123",
+          address: "Jl. Pangkal Kaya",
+          since: "2000"
+        },
+      };
+      const response = await request(url)
+        .post("/")
+        .set("Authorization", `Bearer ${userToken}`)
+        .send(queryData);
+
+      expect(response.status).toBe(200);
+      expect(response.body.errors).toBeInstanceOf(Array);
+      expect(response.body.errors[0]).toHaveProperty("message", "Store description cannot be empty");
+    });
+
+    test("Failed create store : Phone Number cannot empty", async () => {
+      const queryData = {
+        query: `mutation CreateStore($name: String, $description: String, $phoneNumber: String, $address: String, $since: String) {
+                  createStore(name: $name, description: $description, phoneNumber: $phoneNumber, address: $address, since: $since) {
+                    _id
+                    name
+                    description
+                    phoneNumber
+                    address
+                    since
+                    userId
+                  }
+                }`,
+        variables: {
+          name: "Denden Mushi Store",
+          description: "Ini toko Denden Mushi Store",
+          phoneNumber: "",
+          address: "Jl. Pangkal Kaya",
+          since: "2000"
+        },
+      };
+      const response = await request(url)
+        .post("/")
+        .set("Authorization", `Bearer ${userToken}`)
+        .send(queryData);
+
+      expect(response.status).toBe(200);
+      expect(response.body.errors).toBeInstanceOf(Array);
+      expect(response.body.errors[0]).toHaveProperty("message", "Store phone number cannot be empty");
+    });
+
+    test("Failed create store : Address cannot empty", async () => {
+      const queryData = {
+        query: `mutation CreateStore($name: String, $description: String, $phoneNumber: String, $address: String, $since: String) {
+                  createStore(name: $name, description: $description, phoneNumber: $phoneNumber, address: $address, since: $since) {
+                    _id
+                    name
+                    description
+                    phoneNumber
+                    address
+                    since
+                    userId
+                  }
+                }`,
+        variables: {
+          name: "Denden Mushi Store",
+          description: "Ini toko Denden Mushi Store",
+          phoneNumber: "08123123123",
+          address: "",
+          since: "2000"
+        },
+      };
+      const response = await request(url)
+        .post("/")
+        .set("Authorization", `Bearer ${userToken}`)
+        .send(queryData);
+
+      expect(response.status).toBe(200);
+      expect(response.body.errors).toBeInstanceOf(Array);
+      expect(response.body.errors[0]).toHaveProperty("message", "Store address cannot be empty");
+    });
+  });
+
+  describe("Update Store", () => {
+    describe("Success update store", () => {
+      test("Update store", async () => {
+        const queryData = {
+          query:`mutation UpdateStore($name: String, $description: String, $phoneNumber: String, $address: String, $since: String, $id: ID) {
+                  updateStore(name: $name, description: $description, phoneNumber: $phoneNumber, address: $address, since: $since, _id: $id) {
+                    _id
+                    name
+                    description
+                    phoneNumber
+                    address
+                    since
+                    userId
+                  }
+                }`,
+          variables: {
+            name: "Gelak Tawa Store",
+            description: "Ini adalah Gelak Tawa Store",
+            phoneNumber: "08321321321",
+            address: "Jl. Pangkal Pensil",
+            since: "now",
+            id: "66697c86be63217582250a92"
+          }
+        }
+        const response = await request(url)
+        .post("/")
+        .set("Authorization", `Bearer ${userToken}`)
+        .send(queryData);
+
+        expect(response.status).toBe(200);
+        expect(response.body.data.updateStore).toBeInstanceOf(Object);
+        expect(response.body.data.updateStore).toHaveProperty("_id", expect.any(String));
+        expect(response.body.data.updateStore).toHaveProperty("name", expect.any(String));
+        expect(response.body.data.updateStore).toHaveProperty("description", expect.any(String));
+        expect(response.body.data.updateStore).toHaveProperty("phoneNumber", expect.any(String));
+        expect(response.body.data.updateStore).toHaveProperty("address", expect.any(String));
+        expect(response.body.data.updateStore).toHaveProperty("since", expect.any(String));
+        expect(response.body.data.updateStore).toHaveProperty("userId", expect.any(String));
+      });
+    });
+
+    describe("Failed update store", () => {
+      describe("Unauthorized", () => {
+        test("Unauthorized", async () => {
+          const queryData = {
+            query:`mutation UpdateStore($name: String, $description: String, $phoneNumber: String, $address: String, $since: String, $id: ID) {
+                    updateStore(name: $name, description: $description, phoneNumber: $phoneNumber, address: $address, since: $since, _id: $id) {
+                      _id
+                      name
+                      description
+                      phoneNumber
+                      address
+                      since
+                      userId
+                    }
+                  }`,
+            variables: {
+              name: "Gelak Tawa Store",
+              description: "Ini adalah Gelak Tawa Store",
+              phoneNumber: "08321321321",
+              address: "Jl. Pangkal Pensil",
+              since: "now",
+              id: "66697c86be63217582250a92"
+            }
+          }
+          const response = await request(url)
+          .post("/")
+          .send(queryData);
+
+          expect(response.status).toBe(200);
+          expect(response.body.errors).toBeInstanceOf(Array);
+          expect(response.body.errors[0]).toHaveProperty("message", "Unauthorized");
+        });
+
+        test("Failed update store : Store cannot empty", async () => {
+          const queryData = {
+            query:`mutation UpdateStore($name: String, $description: String, $phoneNumber: String, $address: String, $since: String, $id: ID) {
+                    updateStore(name: $name, description: $description, phoneNumber: $phoneNumber, address: $address, since: $since, _id: $id) {
+                      _id
+                      name
+                      description
+                      phoneNumber
+                      address
+                      since
+                      userId
+                    }
+                  }`,
+            variables: {
+              name: "",
+              description: "Ini adalah Gelak Tawa Store",
+              phoneNumber: "08321321321",
+              address: "Jl. Pangkal Pensil",
+              since: "now",
+              id: "66697c86be63217582250a92"
+            }
+          }
+          const response = await request(url)
+          .post("/")
+          .set("Authorization", `Bearer ${userToken}`)
+          .send(queryData);
+
+          expect(response.status).toBe(200);
+          expect(response.body.errors).toBeInstanceOf(Array);
+          expect(response.body.errors[0]).toHaveProperty("message", "Store name cannot be empty");
+        });
+
+        test("Failed update store : Description cannot empty", async () => {
+          const queryData = {
+            query:`mutation UpdateStore($name: String, $description: String, $phoneNumber: String, $address: String, $since: String, $id: ID) {
+                    updateStore(name: $name, description: $description, phoneNumber: $phoneNumber, address: $address, since: $since, _id: $id) {
+                      _id
+                      name
+                      description
+                      phoneNumber
+                      address
+                      since
+                      userId
+                    }
+                  }`,
+            variables: {
+              name: "Gelak Tawa Store",
+              description: "",
+              phoneNumber: "08321321321",
+              address: "Jl. Pangkal Pensil",
+              since: "now",
+              id: "66697c86be63217582250a92"
+            }
+          }
+          const response = await request(url)
+          .post("/")
+          .set("Authorization", `Bearer ${userToken}`)
+          .send(queryData);
+
+          expect(response.status).toBe(200);
+          expect(response.body.errors).toBeInstanceOf(Array);
+          expect(response.body.errors[0]).toHaveProperty("message", "Store description cannot be empty");
+        });
+
+        test("Failed update store : Phone Number cannot empty", async () => {
+          const queryData = {
+            query:`mutation UpdateStore($name: String, $description: String, $phoneNumber: String, $address: String, $since: String, $id: ID) {
+                    updateStore(name: $name, description: $description, phoneNumber: $phoneNumber, address: $address, since: $since, _id: $id) {
+                      _id
+                      name
+                      description
+                      phoneNumber
+                      address
+                      since
+                      userId
+                    }
+                  }`,
+            variables: {
+              name: "Gelak Tawa Store",
+              description: "Ini adalah Gelak Tawa Store",
+              phoneNumber: "",
+              address: "Jl. Pangkal Pensil",
+              since: "now",
+              id: "66697c86be63217582250a92"
+            }
+          }
+          const response = await request(url)
+          .post("/")
+          .set("Authorization", `Bearer ${userToken}`)
+          .send(queryData);
+
+          expect(response.status).toBe(200);
+          expect(response.body.errors).toBeInstanceOf(Array);
+          expect(response.body.errors[0]).toHaveProperty("message", "Store phone number cannot be empty");
+        });
+
+        test("Failed update store : Address cannot empty", async () => {
+          const queryData = {
+            query:`mutation UpdateStore($name: String, $description: String, $phoneNumber: String, $address: String, $since: String, $id: ID) {
+                    updateStore(name: $name, description: $description, phoneNumber: $phoneNumber, address: $address, since: $since, _id: $id) {
+                      _id
+                      name
+                      description
+                      phoneNumber
+                      address
+                      since
+                      userId
+                    }
+                  }`,
+            variables: {
+              name: "Gelak Tawa Store",
+              description: "Ini adalah Gelak Tawa Store",
+              phoneNumber: "08321321321",
+              address: "",
+              since: "now",
+              id: "66697c86be63217582250a92"
+            }
+          }
+          const response = await request(url)
+          .post("/")
+          .set("Authorization", `Bearer ${userToken}`)
+          .send(queryData);
+
+          expect(response.status).toBe(200);
+          expect(response.body.errors).toBeInstanceOf(Array);
+          expect(response.body.errors[0]).toHaveProperty("message", "Store address cannot be empty");
+        });
+
+        test("Failed update store : Store Not Found", async () => {
+          const queryData = {
+            query:`mutation UpdateStore($name: String, $description: String, $phoneNumber: String, $address: String, $since: String, $id: ID) {
+                    updateStore(name: $name, description: $description, phoneNumber: $phoneNumber, address: $address, since: $since, _id: $id) {
+                      _id
+                      name
+                      description
+                      phoneNumber
+                      address
+                      since
+                      userId
+                    }
+                  }`,
+            variables: {
+              name: "Gelak Tawa Store",
+              description: "Ini adalah Gelak Tawa Store",
+              phoneNumber: "08321321321",
+              address: "Jl. Pangkal Pensil",
+              since: "now",
+              id: "66697c86be632175822222c2"
+            }
+          }
+          const response = await request(url)
+          .post("/")
+          .set("Authorization", `Bearer ${userToken}`)
+          .send(queryData);
+
+          expect(response.status).toBe(200);
+          expect(response.body.errors).toBeInstanceOf(Array);
+          expect(response.body.errors[0]).toHaveProperty("message", "Store not found");
+        });
+      });
+    });
+  });
+
+  describe("Delete Store", () => {
+    describe("Success delete store", () => {
+      test("Success delete store", async () => {
+        const queryData = {
+          query:`mutation DeleteStore($id: ID) {
+                  deleteStore(_id: $id) {
+                    message
+                  }
+                }`,
+          variables: {
+            id : "66697c86be63217582250a92"
+          }
+        }
+        const response = await request(url)
+        .post("/")
+        .set("Authorization", `Bearer ${userToken}`)
+        .send(queryData);
+
+        expect(response.status).toBe(200);
+        expect(response.body.data).toHaveProperty("deleteStore");
+        expect(response.body.data.deleteStore).toHaveProperty("message", `Store with id 66697c86be63217582250a92 has successfully deleted`);
+      });      
+    });
+
+    describe("Failed delete store", () => {
+      test("Unauthorized", async () => {
+        const queryData = {
+          query:`mutation DeleteStore($id: ID) {
+                  deleteStore(_id: $id) {
+                    message
+                  }
+                }`,
+          variables: {
+            id : "66697c86be63217582250a92"
+          }
+        }
+        const response = await request(url)
+        .post("/")
+        .send(queryData);
+        
+        expect(response.status).toBe(200);
+        expect(response.body.errors).toBeInstanceOf(Array);
+        expect(response.body.errors[0]).toHaveProperty("message", "Unauthorized");
+      });
+
+      test("Store not found", async () => {
+        const queryData = {
+          query:`mutation DeleteStore($id: ID) {
+                  deleteStore(_id: $id) {
+                    message
+                  }
+                }`,
+          variables: {
+            id : "66697c86be632175822222c2"
+          }
+        }
+        const response = await request(url)
+        .post("/")
+        .set("Authorization", `Bearer ${userToken}`)
+        .send(queryData);
+        
+        expect(response.status).toBe(200);
+        expect(response.body.errors).toBeInstanceOf(Array);
+        expect(response.body.errors[0]).toHaveProperty("message", "Store not found");
+      });
+    });
   });
 });
