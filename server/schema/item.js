@@ -58,7 +58,7 @@ const resolvers = {
       if (!storeId) {
         throw new Error("Please provide a storeId");
       }
-      // console.log("🚀 ~ getAllItems: ~ storeId:", storeId);
+      
       const items = await Item.getAllItems(new ObjectId(storeId));
       return items;
     },
@@ -121,7 +121,6 @@ const resolvers = {
         storeId: new ObjectId(storeId),
         barcode,
       };
-      // console.log("🚀 ~ newItem:", newItem);
 
       const item = await Item.createItem(newItem);
 
@@ -175,7 +174,6 @@ const resolvers = {
       };
 
       const item = await Item.updateItem(updatedItem);
-      console.log("🚀 ~ item:", item);
 
       return item;
     },

@@ -17,6 +17,7 @@ beforeAll(async () => {
     e._id = new ObjectId(e._id);
     return e;
   });
+  await database.collection("users").drop();
   await database.collection("users").insertMany(data);
 
   const user = await database.collection("users").findOne({
