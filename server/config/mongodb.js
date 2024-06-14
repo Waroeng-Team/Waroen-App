@@ -9,7 +9,13 @@ const client = new MongoClient(uri, {
   },
 });
 
-const database = client.db("final-project");
+let database = client.db("final-project");
+
+require("dotenv").config();
+
+if (process.env.NODE_ENV === "testing") {
+  database = client.db("final-project-testing");
+}
 
 // async function run() {
 //     try {
