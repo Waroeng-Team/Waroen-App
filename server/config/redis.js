@@ -5,6 +5,7 @@ const redis = new Redis({
   host: process.env.REDIS_HOST,
   username: "default",
   password: process.env.REDIS_PASSWORD,
+  
 });
 
 module.exports = redis;

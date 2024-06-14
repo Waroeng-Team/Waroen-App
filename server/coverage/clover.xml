@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<coverage generated="1718344088398" clover="3.2.0">
-  <project timestamp="1718344088399" name="All files">
+<coverage generated="1718353850645" clover="3.2.0">
+  <project timestamp="1718353850645" name="All files">
     <metrics statements="297" coveredstatements="119" conditionals="91" coveredconditionals="23" methods="49" coveredmethods="9" elements="437" coveredelements="151" complexity="0" loc="297" ncloc="297" packages="5" files="16" classes="16"/>
     <package name="server">
       <metrics statements="26" coveredstatements="17" conditionals="9" coveredconditionals="2" methods="3" coveredmethods="2"/>
@@ -50,7 +50,7 @@
         <metrics statements="3" coveredstatements="3" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
         <line num="1" count="1" type="stmt"/>
         <line num="3" count="1" type="stmt"/>
-        <line num="10" count="1" type="stmt"/>
+        <line num="11" count="1" type="stmt"/>
       </file>
     </package>
     <package name="server.helpers">
@@ -59,7 +59,7 @@
         <metrics statements="4" coveredstatements="4" conditionals="0" coveredconditionals="0" methods="1" coveredmethods="1"/>
         <line num="1" count="1" type="stmt"/>
         <line num="3" count="1" type="stmt"/>
-        <line num="6" count="1" type="stmt"/>
+        <line num="6" count="2" type="stmt"/>
         <line num="9" count="1" type="stmt"/>
       </file>
       <file name="jwt.js" path="C:\Yugo\Hacktiv8\Phase 3\Week 3\Final Project\V6\Waroeng-App-Server\server\helpers\jwt.js">
@@ -232,8 +232,8 @@
         <line num="61" count="2" type="cond" truecount="2" falsecount="0"/>
         <line num="62" count="1" type="stmt"/>
         <line num="65" count="1" type="stmt"/>
-        <line num="67" count="1" type="stmt"/>
-        <line num="71" count="1" type="stmt"/>
+        <line num="70" count="1" type="stmt"/>
+        <line num="74" count="1" type="stmt"/>
       </file>
     </package>
     <package name="server.schema">
@@ -349,17 +349,17 @@
         <line num="1" count="1" type="stmt"/>
         <line num="3" count="1" type="stmt"/>
         <line num="18" count="1" type="stmt"/>
-        <line num="40" count="1" type="stmt"/>
-        <line num="42" count="1" type="stmt"/>
-        <line num="46" count="7" type="stmt"/>
+        <line num="41" count="1" type="stmt"/>
+        <line num="43" count="1" type="stmt"/>
         <line num="47" count="7" type="stmt"/>
         <line num="48" count="7" type="stmt"/>
-        <line num="49" count="1" type="stmt"/>
-        <line num="52" count="5" type="stmt"/>
+        <line num="49" count="7" type="stmt"/>
+        <line num="50" count="1" type="stmt"/>
         <line num="53" count="5" type="stmt"/>
         <line num="54" count="5" type="stmt"/>
-        <line num="55" count="1" type="stmt"/>
-        <line num="60" count="1" type="stmt"/>
+        <line num="55" count="5" type="stmt"/>
+        <line num="56" count="1" type="stmt"/>
+        <line num="61" count="1" type="stmt"/>
       </file>
     </package>
   </project>
