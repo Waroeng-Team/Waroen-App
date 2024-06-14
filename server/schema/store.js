@@ -37,21 +37,17 @@ const typeDefs = `#graphql
 const resolvers = {
   Query: {
     getAllStores: async (_, args, contextValue) => {
-      try {
-        const { _id } = contextValue.auth();
+      const { _id } = contextValue.auth();
 
-        const cache = await redis.get("stores");
-        if (cache) {
-          return JSON.parse(cache);
-        }
-
-        const stores = await Store.getAllStores(_id);
-        await redis.set("stores", JSON.stringify(stores));
-
-        return stores;
-      } catch (error) {
-        console.log(error);
+      const cache = await redis.get("stores");
+      if (cache) {
+        return JSON.parse(cache);
       }
+
+      const stores = await Store.getAllStores(_id);
+      await redis.set("stores", JSON.stringify(stores));
+
+      return stores;
     },
     getStoreById: async (_, args, contextValue) => {
       contextValue.auth();
