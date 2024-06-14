@@ -21,6 +21,7 @@ type User {
     name: String
     email: String
     password: String
+    isNewAccount: Boolean
 }
 
 type AccessToken {
@@ -44,7 +45,7 @@ const resolvers = {
   Mutation: {
     register: async (parent, args) => {
       const { name, email, password } = args;
-      const newUser = { name, email, password };
+      const newUser = { name, email, password, isNewAccount: true };
       await User.register(newUser);
       return newUser;
     },

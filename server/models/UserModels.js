@@ -62,7 +62,10 @@ class User {
       throw new Error("Invalid email/password");
     }
 
-    const access_token = signToken({ _id: findUser._id });
+    const access_token = signToken({
+      _id: findUser._id,
+      isNewAccount: findUser.isNewAccount,
+    });
 
     return { access_token };
   }

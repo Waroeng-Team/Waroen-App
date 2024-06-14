@@ -1,14 +1,25 @@
 const { createApolloServer } = require("../index");
+const { database } = require("../config/mongodb");
 const request = require("supertest");
+const redis = require("../config/redis");
+const { hashPassword } = require("../helpers/bcrypt");
 
 let server, url;
 
 beforeAll(async () => {
   ({ server, url } = await createApolloServer({ port: 0 }));
+  let data = require("../db/user.json");
+  data.map((e) => {
+    e.password = hashPassword(e.password);
+    return e;
+  });
+  await database.collection("users").insertMany(data);
 });
 
 afterAll(async () => {
   await server?.stop();
+  await redis.quit();
+  await database.collection("users").drop();
 });
 
 describe("User Query", () => {
@@ -34,6 +45,7 @@ describe("User Query", () => {
       expect(user).toHaveProperty("password", expect.any(String));
     });
   });
+
   describe("Succes Login", () => {
     test("Login", async () => {
       const queryData = {
@@ -138,6 +150,7 @@ describe("User Query", () => {
           email
           name
           password
+          isNewAccount
         }
       }`,
         variables: {
@@ -163,6 +176,10 @@ describe("User Query", () => {
       expect(response.body.data.register).toHaveProperty(
         "password",
         expect.any(String)
+      );
+      expect(response.body.data.register).toHaveProperty(
+        "isNewAccount",
+        expect.any(Boolean)
       );
     });
   });
