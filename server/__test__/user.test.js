@@ -3,17 +3,30 @@ const { database } = require("../config/mongodb");
 const request = require("supertest");
 const redis = require("../config/redis");
 const { hashPassword } = require("../helpers/bcrypt");
+const { ObjectId } = require("mongodb");
+const { signToken } = require("../helpers/jwt");
 
 let server, url;
+let userToken;
 
 beforeAll(async () => {
   ({ server, url } = await createApolloServer({ port: 0 }));
   let data = require("../db/user.json");
   data.map((e) => {
     e.password = hashPassword(e.password);
+    e._id = new ObjectId(e._id);
     return e;
   });
   await database.collection("users").insertMany(data);
+
+  const user = await database.collection("users").findOne({
+    _id: new ObjectId("666bfc96eb451304a07eb0ba"),
+  });
+
+  userToken = signToken({
+    _id: user._id,
+    isNewAccount: user.isNewAccount,
+  });
 });
 
 afterAll(async () => {
@@ -46,6 +59,35 @@ describe("User Query", () => {
     });
   });
 
+  test("Get User By Id", async () => {
+    const queryData = {
+      query: `query GetUserById($id: ID) {
+                getUserById(_id: $id) {
+                    _id
+                    name
+                    email
+                    password
+                    isNewAccount
+                }
+            }`,
+      variables: {
+        "id": "666bfc96eb451304a07eb0ba"
+      },
+    };
+    const response = await request(url)
+      .post("/")
+      .set("Authorization", `Bearer ${userToken}`)
+      .send(queryData);
+
+    expect(response.status).toBe(200);
+    expect(response.body.data.getUserById).toBeInstanceOf(Object);
+    expect(response.body.data.getUserById).toHaveProperty("_id", expect.any(String));
+    expect(response.body.data.getUserById).toHaveProperty("name", expect.any(String));
+    expect(response.body.data.getUserById).toHaveProperty("email", expect.any(String));
+    expect(response.body.data.getUserById).toHaveProperty("password", expect.any(String));
+    expect(response.body.data.getUserById).toHaveProperty("isNewAccount", expect.any(Boolean));
+  });
+
   describe("Succes Login", () => {
     test("Login", async () => {
       const queryData = {
@@ -55,7 +97,7 @@ describe("User Query", () => {
             access_token
         }
     }`,
-        variables: { email: "ilham@mail.com", password: "123456" },
+        variables: { email: "ilham1@mail.com", password: "123456" },
       };
       const response = await request(url).post("/").send(queryData);
       // expect(response.status).toBe(200);
@@ -93,7 +135,7 @@ describe("User Query", () => {
             access_token
         }
     }`,
-        variables: { email: "ilham@mail.com", password: "" },
+        variables: { email: "ilham1@mail.com", password: "" },
       };
       const response = await request(url).post("/").send(queryData);
       // expect(response.status).toBe(200);
@@ -129,7 +171,7 @@ describe("User Query", () => {
             access_token
         }
     }`,
-        variables: { email: "ilham@mail.com", password: "12345" },
+        variables: { email: "ilham1@mail.com", password: "12345" },
       };
       const response = await request(url).post("/").send(queryData);
       // expect(response.status).toBe(200);

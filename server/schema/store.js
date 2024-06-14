@@ -56,7 +56,6 @@ const resolvers = {
     getStoreById: async (_, args, contextValue) => {
       contextValue.auth();
       const { _id } = args;
-      console.log();
 
       const store = await Store.getStoreById(_id);
 
