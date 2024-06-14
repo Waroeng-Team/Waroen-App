@@ -1,0 +1,26 @@
+[
+  {
+    "_id": "66698f2ab3ce3549fe6af2f3",
+    "name": "Beng beng",
+    "imageUrl": "https://filebroker-cdn.lazada.co.id/kf/S546fab6b660f459182385107e2cafb8dB.jpg",
+    "description": "snack coklat",
+    "category": "snack",
+    "stock": 56,
+    "buyPrice": 3000,
+    "sellPrice": 5000,
+    "storeId": "66680ebed1d85d8c771c397b",
+    "barcode": "165164985616"
+  },
+  {
+    "_id": "66698f2ab3ce3549fe6af2f4",
+    "name": "Chitato",
+    "imageUrl": "https://id-live-01.slatic.net/p/251e76e13b5a6839312698080f36aa32.jpg",
+    "description": "ciki terbaik didunia",
+    "category": "snack",
+    "stock": 56,
+    "buyPrice": 3000,
+    "sellPrice": 5000,
+    "storeId": "66681bf2338fe8d36fd5663b",
+    "barcode": "1961949613"
+  }
+]

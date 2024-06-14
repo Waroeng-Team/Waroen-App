@@ -1,0 +1,26 @@
+[
+  {
+    "_id": "6669c1a39e93dacf3fdc0d7d",
+    "type": "outcome",
+    "items": [
+      {
+        "itemId": "66698f2ab3ce3549fe6af2f3",
+        "quantity": 5
+      }
+    ],
+    "total": 15000,
+    "storeId": "66680ebed1d85d8c771c397b"
+  },
+  {
+    "_id": "6669c1c1578758190a40ca46",
+    "type": "income",
+    "items": [
+      {
+        "itemId": "66698f2ab3ce3549fe6af2f4",
+        "quantity": 1
+      }
+    ],
+    "total": 5000,
+    "storeId": "66681bf2338fe8d36fd5663b"
+  }
+]
