@@ -76,6 +76,12 @@ class Report {
     return report[0];
   }
 
+  //! INFO PENTING
+  //? buat get data nya, format input date adalah string dengan contoh format "2024-06-12T15:41:53.340+00:00"
+  //? contoh get data by day: sesuaikan dengan tanggalnya
+  //? contoh get data by month: random tanggal dari bulan tersebut. di sini sudah di atur untuk ngambil bulan tersebut
+  //? contoh get data by year: random tanggal dari tahun tersebut. di sini sudah di atur untuk ngambil tahun tersebut
+
   //* ─── Get By Day ──────────────────────────────────────────────────────
   static async getReportByDay(storeId, date) {
     const start = new Date(date);
