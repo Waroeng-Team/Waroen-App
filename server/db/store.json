@@ -1,20 +1,29 @@
 [
-    {
-        "_id": "666972143bfa517aa54bba53",
-        "name": "Kaisel Store",
-        "description": "Ini toko Kaisel Store",
-        "phoneNumber": "08123123123",
-        "address": "Jl. Pangkal Kaya",
-        "since": "1638291600000",
-        "userId": "666bfc96eb451304a07eb0ba"
-      },
-      {
-        "_id": "66697c86be63217582250a92",
-        "name": "Deluxe Store",
-        "description": "Ini toko Deluxe Store",
-        "phoneNumber": "08123123123",
-        "address": "Jl. Pangkal Kaya",
-        "since": "1638291600000",
-        "userId": "666bfc96eb451304a07eb0ba"
-      }
+  {
+    "_id": "666972143bfa517aa54bba53",
+    "name": "Kaisel Store",
+    "description": "Ini toko Kaisel Store",
+    "phoneNumber": "08123123123",
+    "address": "Jl. Pangkal Kaya",
+    "since": "1638291600000",
+    "userId": "666bfc96eb451304a07eb0ba"
+  },
+  {
+    "_id": "66697c86be63217582250a92",
+    "name": "Deluxe Store",
+    "description": "Ini toko Deluxe Store",
+    "phoneNumber": "08123123123",
+    "address": "Jl. Pangkal Kaya",
+    "since": "1638291600000",
+    "userId": "666bfc96eb451304a07eb0ba"
+  },
+  {
+    "_id": "66680ebed1d85d8c771c397b",
+    "name": "iam store",
+    "description": "Ini toko iam store",
+    "phoneNumber": "08123123123",
+    "address": "Jl. Pangkal Kaya raya",
+    "since": "1638291600000",
+    "userId": "6667e9d263c0ea9ff73081de"
+  }
 ]
