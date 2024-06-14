@@ -73,6 +73,14 @@ class Report {
       ])
       .toArray();
 
+    if (
+      report[0] &&
+      report[0].transactionDetail.length !== transactionIds.length
+    ) {
+      await this.reportCollection().deleteOne({ storeId, createdAt: start });
+      return this.generateAndSaveReport(storeId, start, end);
+    }
+
     return report[0];
   }
 
