@@ -16,7 +16,13 @@ class Transaction {
       let item = await database
         .collection("items")
         .findOne({ _id: new ObjectId(e.itemId) });
+      console.log(item);
       if (newTransaction.type == "income") {
+        if (item.stock < e.quantity) {
+          throw new Error(
+            "Can't add " + item.name + " more then " + item.stock
+          );
+        }
         total += item.sellPrice * e.quantity;
 
         let newStock = item.stock - e.quantity;
@@ -66,12 +72,10 @@ class Transaction {
   }
 
   static async getTransactionById(storeId, transactionId) {
-    let result = await database
-      .collection("transactions")
-      .findOne({
-        _id: new ObjectId(transactionId),
-        storeId: new ObjectId(storeId),
-      })
+    let result = await database.collection("transactions").findOne({
+      _id: new ObjectId(transactionId),
+      storeId: new ObjectId(storeId),
+    });
     return result;
   }
 }
