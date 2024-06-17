@@ -39,10 +39,10 @@ const resolvers = {
     getAllStores: async (_, args, contextValue) => {
       const { _id } = contextValue.auth();
 
-      const cache = await redis.get("stores");
-      if (cache) {
-        return JSON.parse(cache);
-      }
+      // const cache = await redis.get("stores");
+      // if (cache) {
+      //   return JSON.parse(cache);
+      // }
 
       const stores = await Store.getAllStores(_id);
       await redis.set("stores", JSON.stringify(stores));
