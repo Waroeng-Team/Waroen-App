@@ -4,10 +4,28 @@ class Item {
   static itemCollection() {
     return database.collection("items");
   }
-  static async getAllItems(storeId) {
-    const res = await this.itemCollection().find({ storeId }).toArray();
+  static async getAllItems(storeId, dataSearch) {
+    const agg = [
+      {
+        $match: {
+          storeId: storeId,
+        },
+      },
+      {
+        $match: {
+          name: {
+            $regex: dataSearch,
+            $options: "i",
+          },
+        },
+      },
+    ];
+
+    const cursor = this.itemCollection().aggregate(agg);
+    const result = await cursor.toArray();
+    // const res = await this.itemCollection().find({ storeId }).toArray();
     // const res = await this.itemCollection().find().toArray();
-    return res;
+    return result;
   }
 
   static async getItemById(storeId, productId) {
