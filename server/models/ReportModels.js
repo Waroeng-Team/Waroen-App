@@ -44,16 +44,16 @@ class Report {
   static async generateAndSaveReport(storeId, start, end) {
     const transactions = await this.getTransaction(storeId, start, end);
     // console.log(
-      //   "🚀 ~ Report ~ generateAndSaveReport ~ transactions:",
-      //   transactions
-      // );
-      
-      if (!transactions.length) throw new Error("No transaction in this time");
-      
-      const { profit, totalIncome, totalOutcome, transactionIds } =
+    //   "🚀 ~ Report ~ generateAndSaveReport ~ transactions:",
+    //   transactions
+    // );
+
+    if (!transactions.length) throw new Error("No transaction in this time");
+
+    const { profit, totalIncome, totalOutcome, transactionIds } =
       profitReport(transactions);
-      // console.log(transactions[19])
-      
+    // console.log(transactions[19])
+
     const newReport = {
       storeId,
       createdAt: start,
@@ -106,7 +106,53 @@ class Report {
     start.setHours(0, 0, 0, 0);
     const end = new Date(date);
     end.setHours(23, 59, 59, 999);
-    return this.generateAndSaveReport(storeId, start, end);
+    let data = await this.generateAndSaveReport(storeId, start, end);
+    let transactionDetail = [];
+    data.transactionDetail.forEach((transaction) => {
+      let date = `${transaction.createdAt}`;
+      date = date.split(" ");
+      let convertDate = [date[2], date[1], date[3]];
+      convertDate = convertDate.join("-");
+      if (!transactionDetail.some((td) => td.date === convertDate)) {
+        transactionDetail.push({ date: convertDate, income: [], outcome: [] });
+      }
+      transactionDetail.forEach((newTransaction) => {
+        if (newTransaction.date === convertDate) {
+          if (transaction.type == "income") {
+            transaction.items.forEach((item) => {
+              let existingItem = newTransaction.income.find(
+                (i) => i.name === item.name
+              );
+              if (existingItem) {
+                existingItem.quantity += item.quantity;
+              } else {
+                newTransaction.income.push({
+                  name: item.name,
+                  quantity: item.quantity,
+                });
+              }
+            });
+          }
+          if (transaction.type == "outcome") {
+            transaction.items.forEach((item) => {
+              let existingItem = newTransaction.outcome.find(
+                (i) => i.name === item.name
+              );
+              if (existingItem) {
+                existingItem.quantity += item.quantity;
+              } else {
+                newTransaction.outcome.push({
+                  name: item.name,
+                  quantity: item.quantity,
+                });
+              }
+            });
+          }
+        }
+      });
+    });
+    data.totalItemTransaction = transactionDetail;
+    return data;
   }
 
   //* ─── Get Weekly ─────────────────────────────────────────────────────
@@ -119,8 +165,53 @@ class Report {
     const end = new Date(start);
     end.setUTCDate(start.getUTCDate() + 6);
     end.setUTCHours(23, 59, 59, 999);
-
-    return this.generateAndSaveReport(storeId, start, end);
+    let data = await this.generateAndSaveReport(storeId, start, end);
+    let transactionDetail = [];
+    data.transactionDetail.forEach((transaction) => {
+      let date = `${transaction.createdAt}`;
+      date = date.split(" ");
+      let convertDate = [date[2], date[1], date[3]];
+      convertDate = convertDate.join("-");
+      if (!transactionDetail.some((td) => td.date === convertDate)) {
+        transactionDetail.push({ date: convertDate, income: [], outcome: [] });
+      }
+      transactionDetail.forEach((newTransaction) => {
+        if (newTransaction.date === convertDate) {
+          if (transaction.type == "income") {
+            transaction.items.forEach((item) => {
+              let existingItem = newTransaction.income.find(
+                (i) => i.name === item.name
+              );
+              if (existingItem) {
+                existingItem.quantity += item.quantity;
+              } else {
+                newTransaction.income.push({
+                  name: item.name,
+                  quantity: item.quantity,
+                });
+              }
+            });
+          }
+          if (transaction.type == "outcome") {
+            transaction.items.forEach((item) => {
+              let existingItem = newTransaction.outcome.find(
+                (i) => i.name === item.name
+              );
+              if (existingItem) {
+                existingItem.quantity += item.quantity;
+              } else {
+                newTransaction.outcome.push({
+                  name: item.name,
+                  quantity: item.quantity,
+                });
+              }
+            });
+          }
+        }
+      });
+    });
+    data.totalItemTransaction = transactionDetail;
+    return data;
   }
 
   //* ─── Get Monthly ────────────────────────────────────────────────────
@@ -132,7 +223,53 @@ class Report {
     end.setMonth(end.getMonth() + 1);
     end.setDate(0);
     end.setHours(23, 59, 59, 999);
-    return this.generateAndSaveReport(storeId, start, end);
+    let data = await this.generateAndSaveReport(storeId, start, end);
+    let transactionDetail = [];
+    data.transactionDetail.forEach((transaction) => {
+      let date = `${transaction.createdAt}`;
+      date = date.split(" ");
+      let convertDate = [date[2], date[1], date[3]];
+      convertDate = convertDate.join("-");
+      if (!transactionDetail.some((td) => td.date === convertDate)) {
+        transactionDetail.push({ date: convertDate, income: [], outcome: [] });
+      }
+      transactionDetail.forEach((newTransaction) => {
+        if (newTransaction.date === convertDate) {
+          if (transaction.type == "income") {
+            transaction.items.forEach((item) => {
+              let existingItem = newTransaction.income.find(
+                (i) => i.name === item.name
+              );
+              if (existingItem) {
+                existingItem.quantity += item.quantity;
+              } else {
+                newTransaction.income.push({
+                  name: item.name,
+                  quantity: item.quantity,
+                });
+              }
+            });
+          }
+          if (transaction.type == "outcome") {
+            transaction.items.forEach((item) => {
+              let existingItem = newTransaction.outcome.find(
+                (i) => i.name === item.name
+              );
+              if (existingItem) {
+                existingItem.quantity += item.quantity;
+              } else {
+                newTransaction.outcome.push({
+                  name: item.name,
+                  quantity: item.quantity,
+                });
+              }
+            });
+          }
+        }
+      });
+    });
+    data.totalItemTransaction = transactionDetail;
+    return data;
   }
 
   //* ─── Get Yearly ─────────────────────────────────────────────────────
@@ -143,8 +280,53 @@ class Report {
     const end = new Date(date);
     end.setMonth(11, 31);
     end.setHours(23, 59, 59, 999);
-
-    return this.generateAndSaveReport(storeId, start, end);
+    let data = await this.generateAndSaveReport(storeId, start, end);
+    let transactionDetail = [];
+    data.transactionDetail.forEach((transaction) => {
+      let date = `${transaction.createdAt}`;
+      date = date.split(" ");
+      let convertDate = [date[2], date[1], date[3]];
+      convertDate = convertDate.join("-");
+      if (!transactionDetail.some((td) => td.date === convertDate)) {
+        transactionDetail.push({ date: convertDate, income: [], outcome: [] });
+      }
+      transactionDetail.forEach((newTransaction) => {
+        if (newTransaction.date === convertDate) {
+          if (transaction.type == "income") {
+            transaction.items.forEach((item) => {
+              let existingItem = newTransaction.income.find(
+                (i) => i.name === item.name
+              );
+              if (existingItem) {
+                existingItem.quantity += item.quantity;
+              } else {
+                newTransaction.income.push({
+                  name: item.name,
+                  quantity: item.quantity,
+                });
+              }
+            });
+          }
+          if (transaction.type == "outcome") {
+            transaction.items.forEach((item) => {
+              let existingItem = newTransaction.outcome.find(
+                (i) => i.name === item.name
+              );
+              if (existingItem) {
+                existingItem.quantity += item.quantity;
+              } else {
+                newTransaction.outcome.push({
+                  name: item.name,
+                  quantity: item.quantity,
+                });
+              }
+            });
+          }
+        }
+      });
+    });
+    data.totalItemTransaction = transactionDetail;
+    return data;
   }
 }
 

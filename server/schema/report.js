@@ -12,6 +12,23 @@ const typeDefs = `#graphql
     profit: Int
     storeId: ID
     transactionDetail: [Transaction]
+    totalItemTransaction: [TotalItemTransaction]
+  }
+
+  type TotalItemTransaction {
+    date: String
+    income: [Income]
+    outcome:[Outcome]
+  }
+
+  type Income {
+    name: String
+    quantity: Int
+  }
+
+  type Outcome {
+    name: String
+    quantity: Int
   }
 
   type Transaction {
