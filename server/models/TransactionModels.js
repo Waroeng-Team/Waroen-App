@@ -90,10 +90,24 @@ class Transaction {
   }
 
   static async getAllTransaction(storeId) {
-    let result = await database
-      .collection("transactions")
-      .find({ storeId: new ObjectId(storeId) })
-      .toArray();
+    const agg = [
+      {
+        $match: {
+          storeId: new ObjectId(storeId),
+        },
+      },
+      {
+        $sort: {
+          createdAt: -1,
+        },
+      },
+    ];
+    const cursor = database.collection("transactions").aggregate(agg);
+    const result = await cursor.toArray();
+    // let result = await database
+    //   .collection("transactions")
+    //   .find({ storeId: new ObjectId(storeId) })
+    //   .toArray();
     return result;
   }
 
