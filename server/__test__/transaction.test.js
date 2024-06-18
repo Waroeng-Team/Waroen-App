@@ -370,5 +370,39 @@ describe("Transaction Query", () => {
         .send(queryData);
       expect(response.body.errors[0]).toHaveProperty("message", "Unauthorized");
     });
+
+    test("Add transaction more then stock", async () => {
+      const queryData = {
+        query: `
+      mutation Addtransaction($type: String, $storeId: ID, $items: [ItemInput]) {
+        addtransaction(type: $type, storeId: $storeId, items: $items) {
+          _id
+          storeId
+          type
+          items {
+            itemId
+            quantity
+          }
+          total
+          createdAt
+        }
+      }`,
+        variables: {
+          type: "income",
+          items: [
+            {
+              itemId: "66698f2ab3ce3549fe6af2f3",
+              quantity: 100,
+            },
+          ],
+          storeId: "66680ebed1d85d8c771c397b",
+        },
+      };
+      const response = await request(url)
+        .post("/")
+        .set("Authorization", `Bearer ${token}`)
+        .send(queryData);
+      expect(response.body.errors[0]).toHaveProperty("message", expect.any(String));
+    });
   });
 });

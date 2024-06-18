@@ -34,8 +34,11 @@ type Transaction {
 }
 
 type ItemTransaction {
-    itemId: ID,
+    itemId: ID
+    name: String
     quantity: Int
+    sellPrice: Int
+    buyPrice: Int
 }
 
 input ItemInput {
@@ -74,8 +77,8 @@ const resolvers = {
       contextValue.auth();
       const { type, items, storeId } = args;
       const newTransaction = { type, items, storeId };
-      let total = await Transaction.addTransaction(newTransaction);
-      return { type, items, total, storeId };
+      let result = await Transaction.addTransaction(newTransaction);
+      return { type, items: result.items, total: result.total, storeId };
     },
   },
 };

@@ -16,7 +16,7 @@ class Transaction {
       let item = await database
         .collection("items")
         .findOne({ _id: new ObjectId(e.itemId) });
-      console.log(item);
+      // console.log(item);
       if (newTransaction.type == "income") {
         if (item.stock < e.quantity) {
           throw new Error(
@@ -48,10 +48,36 @@ class Transaction {
         );
       }
     }
-    let items = newTransaction.items.map((e) => {
-      e.itemId = new ObjectId(e.itemId);
-      return e;
+    let itemsPromises = newTransaction.items.map(async (e) => {
+      let itemId = new ObjectId(e.itemId);
+      const agg = [
+        {
+          $match: {
+            _id: itemId,
+          },
+        },
+        {
+          $unset: [
+            "imageUrl",
+            "description",
+            "category",
+            "createdAt",
+            "storeId",
+            "barcode",
+            "stock",
+            "_id",
+          ],
+        },
+      ];
+      const coll = database.collection("items");
+      const cursor = coll.aggregate(agg);
+      const result = await cursor.toArray();
+      result[0].quantity = e.quantity;
+      result[0].itemId = new ObjectId(e.itemId);
+      return result[0];
     });
+
+    let items = await Promise.all(itemsPromises);
 
     await database.collection("transactions").insertOne({
       type: newTransaction.type,
@@ -60,7 +86,7 @@ class Transaction {
       storeId: new ObjectId(newTransaction.storeId),
       createdAt: new Date(),
     });
-    return total;
+    return { items, total };
   }
 
   static async getAllTransaction(storeId) {
