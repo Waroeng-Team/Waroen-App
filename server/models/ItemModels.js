@@ -38,7 +38,15 @@ class Item {
 
   static async createItem(item) {
     // console.log("🚀 ~ Item ~ createItem ~ item:", item);
-    return await this.itemCollection().insertOne(item);
+    let createItem = await this.itemCollection().insertOne(item);
+    await this.itemCollection().updateOne(
+      { _id: createItem.insertedId },
+      { $set: { barcode: createItem.insertedId } }
+    );
+    let result = await this.itemCollection().findOne({
+      _id: createItem.insertedId,
+    });
+    return result;
   }
 
   static async updateItem(item) {
