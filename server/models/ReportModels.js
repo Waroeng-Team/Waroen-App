@@ -44,15 +44,16 @@ class Report {
   static async generateAndSaveReport(storeId, start, end) {
     const transactions = await this.getTransaction(storeId, start, end);
     // console.log(
-    //   "🚀 ~ Report ~ generateAndSaveReport ~ transactions:",
-    //   transactions
-    // );
-
-    if (!transactions.length) throw new Error("No transaction in this time");
-
-    const { profit, totalIncome, totalOutcome, transactionIds } =
+      //   "🚀 ~ Report ~ generateAndSaveReport ~ transactions:",
+      //   transactions
+      // );
+      
+      if (!transactions.length) throw new Error("No transaction in this time");
+      
+      const { profit, totalIncome, totalOutcome, transactionIds } =
       profitReport(transactions);
-
+      // console.log(transactions[19])
+      
     const newReport = {
       storeId,
       createdAt: start,
@@ -87,6 +88,7 @@ class Report {
       await this.reportCollection().deleteOne({ storeId, createdAt: start });
       return this.generateAndSaveReport(storeId, start, end);
     }
+    // console.log(report[0])
 
     return report[0];
   }
