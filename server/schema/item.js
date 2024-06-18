@@ -40,7 +40,7 @@ const typeDefs = `#graphql
   }
 
   type Query {
-    getAllItems(storeId: ID!): [Item]
+    getAllItems(storeId: ID!, search: String): [Item]
     getItemById(storeId: ID!, productId: ID!): Item
   }
 
@@ -52,14 +52,14 @@ const typeDefs = `#graphql
 
 const resolvers = {
   Query: {
-    getAllItems: async (parent, { storeId }, contextValue) => {
+    getAllItems: async (parent, { storeId, search }, contextValue) => {
       contextValue.auth()._id;
 
       if (!storeId) {
         throw new Error("Please provide a storeId");
       }
-      
-      const items = await Item.getAllItems(new ObjectId(storeId));
+      let dataSearch = search || "";
+      const items = await Item.getAllItems(new ObjectId(storeId), dataSearch);
       return items;
     },
     getItemById: async (parent, { storeId, productId }, contextValue) => {
@@ -117,7 +117,7 @@ const resolvers = {
         stock,
         buyPrice,
         sellPrice,
-        createdAt,
+        createdAt: new Date(createdAt),
         storeId: new ObjectId(storeId),
         barcode,
       };
