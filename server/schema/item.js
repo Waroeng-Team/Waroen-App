@@ -124,9 +124,10 @@ const resolvers = {
 
       const item = await Item.createItem(newItem);
 
-      if (item.acknowledged === true) {
-        return newItem;
-      }
+      // if (item.acknowledged === true) {
+      //   return newItem;
+      // }
+      return item
     },
 
     updateItem: async (
