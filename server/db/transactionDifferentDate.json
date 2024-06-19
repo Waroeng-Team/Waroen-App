@@ -1,6 +1,6 @@
 [
   {
-    "_id": "6669c1a39e93dacf3fdc0d7d",
+    "_id": "6671336c842699585fcef593",
     "type": "outcome",
     "items": [
       {
@@ -22,7 +22,7 @@
     "storeId": "66680ebed1d85d8c771c397b"
   },
   {
-    "_id": "6669c1c1578758190a40ca46",
+    "_id": "667133ce842699585fcef594",
     "type": "income",
     "items": [
       {
@@ -44,7 +44,7 @@
     "storeId": "66681bf2338fe8d36fd5663b"
   },
   {
-    "_id": "66711073b76eb85fe68b028a",
+    "_id": "667133d3842699585fcef595",
     "type": "outcome",
     "items": [
       {
@@ -63,10 +63,10 @@
       }
     ],
     "total": 15000,
-    "storeId": "66681bf2338fe8d36fd5663b"
+    "storeId": "66680ebed1d85d8c771c397b"
   },
   {
-    "_id": "667110c3b76eb85fe68b028b",
+    "_id": "66713496842699585fcef596",
     "type": "income",
     "items": [
       {
@@ -85,6 +85,6 @@
       }
     ],
     "total": 5000,
-    "storeId": "66680ebed1d85d8c771c397b"
+    "storeId": "66681bf2338fe8d36fd5663b"
   }
 ]
