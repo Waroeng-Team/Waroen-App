@@ -114,7 +114,7 @@ const resolvers = {
         imageUrl,
         description,
         category,
-        stock,
+        stock: 0,
         buyPrice,
         sellPrice,
         createdAt: new Date(createdAt),
@@ -122,12 +122,14 @@ const resolvers = {
         barcode,
       };
 
-      const item = await Item.createItem(newItem);
+      const realStock = stock;
+
+      const item = await Item.createItem(newItem, realStock, storeId);
 
       // if (item.acknowledged === true) {
       //   return newItem;
       // }
-      return item
+      return item;
     },
 
     updateItem: async (

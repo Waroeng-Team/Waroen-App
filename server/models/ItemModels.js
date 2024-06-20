@@ -1,4 +1,5 @@
 const { database } = require("../config/mongodb");
+const Transaction = require("./TransactionModels");
 
 class Item {
   static itemCollection() {
@@ -36,9 +37,14 @@ class Item {
     return res;
   }
 
-  static async createItem(item) {
+  static async createItem(item, realStock, storeId) {
     // console.log("🚀 ~ Item ~ createItem ~ item:", item);
     let createItem = await this.itemCollection().insertOne(item);
+    await Transaction.addTransaction({
+      type: "outcome",
+      items: [{ itemId: `${createItem.insertedId}`, quantity: realStock }],
+      storeId: storeId,
+    });
     await this.itemCollection().updateOne(
       { _id: createItem.insertedId },
       { $set: { barcode: createItem.insertedId } }

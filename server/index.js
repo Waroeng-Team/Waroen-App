@@ -1,5 +1,5 @@
-if (process.env.NODE_ENV  !== "production") {
-  require("dotenv").config();  
+if (process.env.NODE_ENV !== "production") {
+  require("dotenv").config();
 }
 
 const { ApolloServer } = require("@apollo/server");
@@ -51,7 +51,7 @@ async function createApolloServer({ port } = { port: 3000 }) {
   });
 
   const { url } = await startStandaloneServer(server, {
-    listen: { port: port },
+    listen: { port: process.env.PORT || port },
     context: async ({ req, res }) => {
       return {
         auth: () => {
